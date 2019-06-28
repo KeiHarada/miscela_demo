@@ -5,7 +5,7 @@ from src.func import mocServer
 if __name__ == "__main__":
 
     '''
-    デモ用にリファクタリング済
+    デモ用に改良済
     バグがあれば原田まで
     '''
 

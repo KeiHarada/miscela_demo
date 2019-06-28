@@ -104,6 +104,8 @@ class CAP:
         self._pattern[att] = 0
     def addMember(self, sensor):
         self._member.append(sensor)
+    def setCoevolution(self, timestamp):
+        self._coevolution = timestamp
     def setPattern(self, att, p):
         self._pattern[att] = p
     def setP1(self, t):
@@ -116,6 +118,8 @@ class CAP:
         return self._id
     def getAttribute(self):
         return self._attribute
+    def getCoevolution(self):
+        return self._coevolution
     def getMember(self):
         return self._member
     def getPattern(self):

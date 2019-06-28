@@ -262,6 +262,7 @@ def getCAP(S, y, psi, C_X):
                 # set cap
                 if len(p1)+len(p2) >= psi:
                     cap.addMember(y)
+                    cap.setCoevolution(p1+p2)
                     cap.setP1(p1)
                     cap.setP2(p2)
                     C_Y.append(cap)
@@ -276,6 +277,7 @@ def getCAP(S, y, psi, C_X):
                     cap_new.addAttribute(S[y].getAttribute())
                     cap_new.addMember(y)
                     cap_new.setPattern(S[y].getAttribute(), 1)
+                    cap.setCoevolution(p1+p2)
                     cap_new.setP1(p1)
                     cap_new.setP2(p2)
                     C_Y.append(cap_new)
@@ -289,6 +291,7 @@ def getCAP(S, y, psi, C_X):
                     cap_new.addAttribute(S[y].getAttribute())
                     cap_new.addMember(y)
                     cap_new.setPattern(S[y].getAttribute(), -1)
+                    cap.setCoevolution(p1+p2)
                     cap_new.setP1(p1)
                     cap_new.setP2(p2)
                     C_Y.append(cap_new)
@@ -338,15 +341,15 @@ def miscela(args):
 
     # output
     print(len(CAPs))
-    with open("pickle/sensor.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(S, pl)
-    with open("pickle/attribute.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(M, pl)
-    with open("pickle/cluster.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(C, pl)
-    with open("pickle/cap.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(CAPs, pl)
-    with open("pickle/evolvingThreshold.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(thresholds, pl)
 
 def mocServer(args):
