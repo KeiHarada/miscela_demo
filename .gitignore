@@ -1,0 +1,8 @@
+# directory
+db/**/*.csv
+result/**/*.csv
+pickle/*.pickle
+# file
+.idea
+.git
+.python-version
