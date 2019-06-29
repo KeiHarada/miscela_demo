@@ -1,4 +1,5 @@
 import argparse
+import pickle
 from src.func import miscela
 from src.func import mocServer
 
@@ -28,5 +29,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(args)
-    miscela(args)
+    #miscela(args)
     #mocServer(args)
+
+    cap = pickle.load(open("pickle/"+args.dataset+"/cap.pickle", "rb"))
+    s = pickle.load(open("pickle/"+args.dataset+"/sensor.pickle", "rb"))
+
+    from src.func import outputCAP
+    outputCAP(args.dataset, s, cap[:1])

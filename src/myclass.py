@@ -23,6 +23,7 @@ class Sensor:
         self._lon = float()
         self._time = list()
         self._data = list()
+        self._data_filled = list()
         self._neighbor = set()
         self._tp = set()
         self._tn = set()
@@ -38,6 +39,8 @@ class Sensor:
         self._lon = lon
     def setData(self, data):
         self._data = data
+    def setData_filled(self, data):
+        self._data_filled = data
     def setTime(self, time):
         self._time = time
     def addNeighbor(self, neighbor):
@@ -56,6 +59,8 @@ class Sensor:
         return [self._lat, self._lon]
     def getData(self):
         return self._data
+    def getData_filled(self):
+        return self._data_filled
     def getTime(self):
         return self._time
     def getNeighbor(self):
@@ -92,7 +97,7 @@ class CAP:
         self._attribute = set()
         self._pattern = dict()
         self._member = list()
-        self._coevolution = set()
+        self._coevolution = list()
         self._p1 = set()
         self._p2 = set()
 
@@ -104,8 +109,8 @@ class CAP:
         self._pattern[att] = 0
     def addMember(self, sensor):
         self._member.append(sensor)
-    def setCoevolution(self, timestamp):
-        self._coevolution = timestamp
+    def setCoevolution(self):
+        self._coevolution = sorted(self._p1 | self._p2)
     def setPattern(self, att, p):
         self._pattern[att] = p
     def setP1(self, t):

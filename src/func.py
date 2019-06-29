@@ -53,9 +53,7 @@ def dataSegmenting(S):
         data = data.fillna(method="ffill")
         data = data.fillna(method="bfill")
         data = data.astype("float64")
-        s_i.setData(list(data))
-        # plt.plot(s_i.getData())
-        # plt.show()
+        s_i.setData_filled(list(data))
 
 def estimateThreshold(S, M, evoRate):
 
@@ -68,7 +66,7 @@ def estimateThreshold(S, M, evoRate):
 
         # each sensor
         for s_i in S[offset: offset+M[attribute]]:
-            data = s_i.getData()
+            data = s_i.getData_filled()
             prev = 0.0
 
             # each value
@@ -88,7 +86,7 @@ def extractEvolving(S, thresholds):
 
     for s in S:
         prev = 0.0
-        data = s.getData()
+        data = s.getData_filled()
         for i in range(len(data)):
             delta = data[i] - prev
             if delta > thresholds[s.getAttribute()]:
@@ -138,6 +136,7 @@ def capSearch(S, C, K, psi):
 
     for i in range(len(CAPs)):
         CAPs[i].setId(i)
+        CAPs[i].setCoevolution()
 
     return CAPs
 
@@ -262,7 +261,6 @@ def getCAP(S, y, psi, C_X):
                 # set cap
                 if len(p1)+len(p2) >= psi:
                     cap.addMember(y)
-                    cap.setCoevolution(p1|p2)
                     cap.setP1(p1)
                     cap.setP2(p2)
                     C_Y.append(cap)
@@ -277,7 +275,6 @@ def getCAP(S, y, psi, C_X):
                     cap_new.addAttribute(S[y].getAttribute())
                     cap_new.addMember(y)
                     cap_new.setPattern(S[y].getAttribute(), 1)
-                    cap.setCoevolution(p1|p2)
                     cap_new.setP1(p1)
                     cap_new.setP2(p2)
                     C_Y.append(cap_new)
@@ -291,15 +288,47 @@ def getCAP(S, y, psi, C_X):
                     cap_new.addAttribute(S[y].getAttribute())
                     cap_new.addMember(y)
                     cap_new.setPattern(S[y].getAttribute(), -1)
-                    cap.setCoevolution(p1|p2)
                     cap_new.setP1(p1)
                     cap_new.setP2(p2)
                     C_Y.append(cap_new)
 
         return C_Y
 
-def outputCAPs(S, C_X):
-    pass
+def outputCAP(dataset, S, CAPs):
+
+    for cap in CAPs:
+
+        cap_id = cap.getId()
+
+        with open("result/" + dataset + "/" + str(cap_id).zfill(5) + "_pattern.csv", "w") as of_pattern:
+            with open("result/"+dataset+"/"+str(cap_id).zfill(5)+"_location.csv", "w") as of_location:
+                with open("result/" + dataset + "/" + str(cap_id).zfill(5) + "_data.csv", "w") as of_data:
+                    with open("result/" + dataset + "/" + str(cap_id).zfill(5) + "_data_filled.csv", "w") as of_data_filled:
+
+                        of_pattern.write("id,attribute,pattern\n")
+                        of_location.write("id,attribute,lat,lon\n")
+                        data = pd.DataFrame(S[0].getTime(), columns=["time"])
+                        data_filled = pd.DataFrame(S[0].getTime(), columns=["time"])
+
+                        for i in cap.getMember():
+
+                            sid = S[i].getId()
+                            attribute = S[i].getAttribute()
+
+                            # pattern
+                            pattern = cap.getPattern()[attribute]
+                            of_pattern.write(sid+","+attribute+","+str(pattern)+"\n")
+
+                            # location
+                            lat, lon = S[i].getLocation()
+                            of_location.write(sid+","+attribute+","+str(lat)+","+str(lon)+"\n")
+
+                            # data
+                            data[sid] = pd.Series(S[i].getData())
+                            data_filled[sid] = pd.Series(S[i].getData_filled())
+
+                        data.to_csv(of_data, index=False)
+                        data_filled.to_csv(of_data_filled, index=False)
 
 def miscela(args):
 
@@ -341,16 +370,18 @@ def miscela(args):
 
     # output
     print(len(CAPs))
+    # outputCAP(args.dataset, S, CAPs)
     with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(S, pl)
-    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/attribute.pickle", "wb") as pl:
         pickle.dump(M, pl)
-    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/cluster.pickle", "wb") as pl:
         pickle.dump(C, pl)
-    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/cap.pickle", "wb") as pl:
         pickle.dump(CAPs, pl)
-    with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
+    with open("pickle/"+args.dataset+"/threshold.pickle", "wb") as pl:
         pickle.dump(thresholds, pl)
+
 
 def mocServer(args):
 
@@ -369,8 +400,8 @@ def mocServer(args):
 
     with open("result/"+args.dataset+"/"+str(cap_id).zfill(5)+"_pattern.csv", "w") as outfile:
         outfile.write("id,attribute,pattern\n")
-        for sensor_id, atttribute in example.items():
-            outfile.write(sensor_id+","+atttribute+",1\n")
+        for sensor_id, attribute in example.items():
+            outfile.write(sensor_id+","+attribute+",1\n")
 
     with open("result/"+args.dataset+"/"+str(cap_id).zfill(5)+"_location.csv", "w") as outfile:
         outfile.write("id,attribute,lat,lon\n")
