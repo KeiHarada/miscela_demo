@@ -1,7 +1,7 @@
 # directory
 db/**/*.csv
 result/**/*.csv
-pickle/*.pickle
+pickle/**/*.pickle
 # file
 .idea
 .git
