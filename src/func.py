@@ -368,9 +368,7 @@ def miscela(args):
     CAPs = capSearch(S, C, args.maxAtt, args.minSup)
     print(Color.GREEN + "OK" + Color.END)
 
-    # output
-    print(len(CAPs))
-    # outputCAP(args.dataset, S, CAPs)
+    # save the results into .pickle file
     with open("pickle/"+args.dataset+"/sensor.pickle", "wb") as pl:
         pickle.dump(S, pl)
     with open("pickle/"+args.dataset+"/attribute.pickle", "wb") as pl:
@@ -381,7 +379,6 @@ def miscela(args):
         pickle.dump(CAPs, pl)
     with open("pickle/"+args.dataset+"/threshold.pickle", "wb") as pl:
         pickle.dump(thresholds, pl)
-
 
 def mocServer(args):
 
